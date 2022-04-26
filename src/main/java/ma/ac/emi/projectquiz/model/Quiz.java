@@ -2,7 +2,12 @@ package ma.ac.emi.projectquiz.model;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
+
 public class Quiz {
+    @Id
+    public String id;
+
     private String name;
     private String description;
     private List<Question> questions;
