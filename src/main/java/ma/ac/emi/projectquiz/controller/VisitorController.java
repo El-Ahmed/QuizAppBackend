@@ -1,21 +1,45 @@
 package ma.ac.emi.projectquiz.controller;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import ma.ac.emi.projectquiz.model.Message;
 import ma.ac.emi.projectquiz.model.Quiz;
+import ma.ac.emi.projectquiz.repository.QuizRepository;
 
-@Controller
+@RestController
 public class VisitorController {
+
+  @Autowired
+  private QuizRepository quizRepository;
     
   @MessageMapping("/connect/{code}")
   @SendTo("/topic/{code}")
   public Message participate(@DestinationVariable String code,Message message) {
     System.out.println(code);
     return message;
+  }
+
+  @CrossOrigin
+  @GetMapping("quizzes")
+  public List<Quiz> getQuizzes() {
+    return quizRepository.findAll();
+  }
+
+  @CrossOrigin
+  @GetMapping("quiz")
+  public Optional<Quiz> getQuizzes(@RequestParam String id) {
+    return quizRepository.findById(id);
   }
 
   @MessageMapping("/Quiz/{code}")
@@ -32,8 +56,8 @@ public class VisitorController {
     return participation;
   }
 
-  @MessageMapping("/Player/{playerId}/score")
-  @SendTo("/topic/Player/{playerId}/score")
+  @MessageMapping("/Players/{playerId}/score")
+  @SendTo("/topic/Players/{playerId}/score")
   public String sendScore(@DestinationVariable String playerId, String score) {
     return score;
   }
@@ -43,9 +67,9 @@ public class VisitorController {
     return question;
   }
 
-  @MessageMapping("/Player/{playerId}/answer")
-  @SendTo("/topic/Player/{playerId}/answer")
-  public String sendAnswer(@DestinationVariable String playerId, String AnswerText) {
+  @MessageMapping("/Quiz/{pin}/answer")
+  @SendTo("/topic/Quiz/{pin}/answer")
+  public String sendAnswer(@DestinationVariable String pin, String AnswerText) {
     return AnswerText;
   }
   
